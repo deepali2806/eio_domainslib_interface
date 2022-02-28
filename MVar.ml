@@ -6,34 +6,60 @@ type 'a mv_state =
   | Full  of 'a * ('a * unit Sched.resumer) Queue.t
   | Empty of 'a Sched.resumer Queue.t
 
-type 'a t = 'a mv_state ref
 
-let create_empty () = ref (Empty (Queue.create ()))
+type 'a mv_state_mutex = {
+  mutex : Mutex.t;
+  mv : 'a mv_state ref
+}
 
-let create v = ref (Full (v, Queue.create ()))
+(* type 'a t = 'a mv_state ref *)
 
-let put v mv =
-  match !mv with
+type 'a t = 'a mv_state_mutex
+
+let create_empty () = 
+    {
+      mutex = Mutex.create ();
+      mv = ref (Empty (Queue.create ()))
+    }
+
+let create v = 
+  {
+    mutex = Mutex.create ();
+    mv = ref (Full (v, Queue.create ()))
+  }
+
+let put v t =
+  Mutex.lock t.mutex;
+  match !(t.mv) with
   | Full (v', q) -> perform (Sched.Suspend (fun r -> Queue.push (v,r) q))
   | Empty q ->
       if Queue.is_empty q then
-        mv := Full (v, Queue.create ())
+        begin
+          t.mv := Full (v, Queue.create ());
+          Mutex.unlock t.mutex
+        end
       else
         let resume = Queue.pop q in
         resume v
 
-let take mv =
-  match !mv with
+let take t =
+  Mutex.lock t.mutex;
+  match !(t.mv) with
   | Empty q -> perform (Sched.Suspend (fun r -> Queue.push r q))
   | Full (v, q) ->
       if Queue.is_empty q then
-        (mv := Empty (Queue.create ()); v)
-      else begin
-        let (v', resume) = Queue.pop q in
-        mv := Full (v', q);
-        resume ();
-        v
-      end
+        begin
+            t.mv := Empty (Queue.create ());
+            Mutex.lock t.mutex;
+            v
+        end
+      else 
+        begin
+          let (v', resume) = Queue.pop q in
+          t.mv := Full (v', q);
+          resume ();
+          v
+        end
       
 let check () =
 	Printf.printf "\nINSIDE MVAR INTERFACE\n"      
