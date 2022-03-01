@@ -31,7 +31,7 @@ let create v =
 let put v t =
   Mutex.lock t.mutex;
   match !(t.mv) with
-  | Full (v', q) -> perform (Sched.Suspend (fun r -> Queue.push (v,r) q))
+  | Full (v', q) -> perform (Sched.Suspend ((fun r -> Queue.push (v,r) q), t.mutex))
   | Empty q ->
       if Queue.is_empty q then
         begin
@@ -39,18 +39,21 @@ let put v t =
           Mutex.unlock t.mutex
         end
       else
-        let resume = Queue.pop q in
-        resume v
+        begin
+          let resume = Queue.pop q in
+          resume v;
+          Mutex.unlock t.mutex
+        end 
 
 let take t =
   Mutex.lock t.mutex;
   match !(t.mv) with
-  | Empty q -> perform (Sched.Suspend (fun r -> Queue.push r q))
+  | Empty q -> perform (Sched.Suspend ((fun r -> Queue.push r q), t.mutex))
   | Full (v, q) ->
       if Queue.is_empty q then
         begin
             t.mv := Empty (Queue.create ());
-            Mutex.lock t.mutex;
+            Mutex.unlock t.mutex;
             v
         end
       else 
@@ -58,6 +61,7 @@ let take t =
           let (v', resume) = Queue.pop q in
           t.mv := Full (v', q);
           resume ();
+          Mutex.unlock t.mutex;
           v
         end
       
