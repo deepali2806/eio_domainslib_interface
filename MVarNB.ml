@@ -1,4 +1,4 @@
-open EffectHandlers
+open Effect
 
 (* module Fun_queue = Fun_queue.t *)
 
@@ -23,8 +23,9 @@ let put v mv =
                                             let newQueue = Fun_queue.push q (v,r) in
                                             let new_contents = Full (v', newQueue) in
                                             let ret = Atomic.compare_and_set mv old_contents new_contents in
-                                            if ret then true
-                                            else false
+                                            ret
+                                            (* if ret then true
+                                            else false *)
                                           )
                             ) in
                     if ret1 then
