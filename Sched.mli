@@ -1,5 +1,5 @@
-open EffectHandlers
+open Effect
 
 type 'a resumer = 'a -> unit
-type _ eff += Stuck : unit eff
-type _ eff += Suspend : (('a resumer -> bool) ) -> 'a eff
+type _ Effect.t += Stuck : unit Effect.t
+type _ Effect.t += Suspend : (('a resumer -> bool) ) -> bool Effect.t
