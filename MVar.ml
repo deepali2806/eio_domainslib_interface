@@ -21,7 +21,7 @@ let put v mv =
         mv := Full (v, Queue.create ())
       else
         let resume = Queue.pop q in
-        let ret = resume v in
+        let ret = resume (Ok v) in
         if ret then ()
         else raise (Abort_take "Excception in Put because it is already aborted")
 
@@ -35,6 +35,6 @@ let take mv =
       else begin
         let (v', resume) = Queue.pop q in
         mv := Full (v', q);
-        let _ = resume () in ();
+        let _ = resume (Ok ()) in ();
         v
       end
