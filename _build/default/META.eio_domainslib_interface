@@ -1,6 +1,0 @@
-description = ""
-requires = ""
-archive(byte) = "eio_domainslib_interface.cma"
-archive(native) = "eio_domainslib_interface.cmxa"
-plugin(byte) = "eio_domainslib_interface.cma"
-plugin(native) = "eio_domainslib_interface.cmxs"
