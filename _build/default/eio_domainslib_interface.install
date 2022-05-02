@@ -1,0 +1,36 @@
+lib: [
+  "_build/install/default/lib/eio_domainslib_interface/META"
+  "_build/install/default/lib/eio_domainslib_interface/MVar.ml"
+  "_build/install/default/lib/eio_domainslib_interface/MVar.mli"
+  "_build/install/default/lib/eio_domainslib_interface/dune-package"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.a"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.cma"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.cmi"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.cmt"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.cmx"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.cmxa"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.ml"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Fun_queue.cmi"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Fun_queue.cmt"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Fun_queue.cmti"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Fun_queue.cmx"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__MVar.cmi"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__MVar.cmt"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__MVar.cmti"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__MVar.cmx"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Sched.cmi"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Sched.cmt"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Sched.cmti"
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface__Sched.cmx"
+  "_build/install/default/lib/eio_domainslib_interface/fun_queue.ml"
+  "_build/install/default/lib/eio_domainslib_interface/fun_queue.mli"
+  "_build/install/default/lib/eio_domainslib_interface/opam"
+  "_build/install/default/lib/eio_domainslib_interface/sched.ml"
+  "_build/install/default/lib/eio_domainslib_interface/sched.mli"
+]
+libexec: [
+  "_build/install/default/lib/eio_domainslib_interface/eio_domainslib_interface.cmxs"
+]
+doc: [
+  "_build/install/default/doc/eio_domainslib_interface/README.md"
+]

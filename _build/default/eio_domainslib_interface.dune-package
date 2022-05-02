@@ -1,0 +1,40 @@
+(lang dune 2.9)
+(name eio_domainslib_interface)
+(library
+ (name eio_domainslib_interface)
+ (kind normal)
+ (archives
+  (byte eio_domainslib_interface.cma)
+  (native eio_domainslib_interface.cmxa))
+ (plugins
+  (byte eio_domainslib_interface.cma)
+  (native eio_domainslib_interface.cmxs))
+ (native_archives eio_domainslib_interface.a)
+ (main_module_name Eio_domainslib_interface)
+ (modes byte native)
+ (modules
+  (wrapped
+   (main_module_name Eio_domainslib_interface)
+   (modules
+    ((name Fun_queue)
+     (obj_name eio_domainslib_interface__Fun_queue)
+     (visibility public)
+     (impl)
+     (intf))
+    ((name MVar)
+     (obj_name eio_domainslib_interface__MVar)
+     (visibility public)
+     (impl)
+     (intf))
+    ((name Sched)
+     (obj_name eio_domainslib_interface__Sched)
+     (visibility public)
+     (impl)
+     (intf)))
+   (alias_module
+    (name Eio_domainslib_interface)
+    (obj_name eio_domainslib_interface)
+    (visibility public)
+    (kind alias)
+    (impl))
+   (wrapped true))))

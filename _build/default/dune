@@ -1,0 +1,4 @@
+(library
+ (name eio_domainslib_interface)
+ (public_name eio_domainslib_interface)
+ )
