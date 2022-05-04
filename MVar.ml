@@ -68,7 +68,7 @@ let rec take mv =
                         if !p then
                           (Printf.printf "\nP is true";a)
                         else
-                          take mv                             
+                          ((Printf.printf "\nP is false";take mv )                            
   | Full (v, q) ->
                 if Fun_queue.length q = 0 then
                   begin
