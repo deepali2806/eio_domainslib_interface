@@ -66,7 +66,7 @@ let rec take mv =
                                           )
                         ) in
                         if !p then
-                          a
+                          (Printf.printf "\nP is true";a)
                         else
                           take mv                             
   | Full (v, q) ->
