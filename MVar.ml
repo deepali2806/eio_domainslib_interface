@@ -1,5 +1,5 @@
 open Effect
-exception Abort_take of string
+(* exception Abort_take of string *)
 
 type 'a mv_state =
   | Full  of 'a * ('a * unit Sched.resumer) Fun_queue.t
@@ -24,7 +24,7 @@ let rec put v mv =
                                             var
                                             ));
                     if !p then
-                      ()
+                      Ok ()
                     else
                       put v mv
                     (* TODO: Retry when var is false *)
@@ -35,18 +35,21 @@ let rec put v mv =
                     let ret = Atomic.compare_and_set mv old_contents new_contents in 
                     if (not ret) then 
                       put v mv
+                    else
+                      (Ok ())
                   end     
       else
           match Fun_queue.pop q with
-                          | None -> ()
+                          | None -> Ok ()
                           | Some (x, newQueue) -> let resume = x in
                                                   let new_contents = Empty newQueue in
                                                   let ret = Atomic.compare_and_set mv old_contents new_contents in 
                                                   if ret then
                                                     begin
                                                       let ret1 = resume (Ok v) in
-                                                      if ret1 then ()
-                                                      else raise (Abort_take "Excception in Put because it is already aborted")  
+                                                      if ret1 then (Ok ())
+                                                      else Error ("Message : Error in put because it is already aborted")
+                                                      (* raise (Abort_take "Excception in Put because it is already aborted")   *)
                                                     end                                               
                                                   else
                                                     put v mv
@@ -66,7 +69,7 @@ let rec take mv =
                                           )
                         ) in
                         if !p then
-                          a
+                          (Ok a)
                         else
                           take mv                             
   | Full (v, q) ->
@@ -75,21 +78,23 @@ let rec take mv =
                     let new_contents = Empty Fun_queue.empty in
                     let ret = Atomic.compare_and_set mv old_contents new_contents in 
                     if ret then 
-                      v
+                      (Ok v)
                     else 
                       take mv
                   end 
                 else
                     match Fun_queue.pop q with
-                    | None -> raise (Abort_take "Excception in take when queue popping from empty queue")
+                    | None -> Error ("Message : Error in take because popping from empty queue") 
+                    (* raise (Abort_take "Excception in take when queue popping from empty queue") *)
                     | Some ((v', resume), newQueue) -> 
                                                   let new_contents = Full (v', newQueue) in
                                                   let ret = Atomic.compare_and_set mv old_contents new_contents in 
                                                   if ret then
                                                     begin
                                                     let ret1 = resume (Ok ()) in 
-                                                      if ret1 then v
-                                                      else raise (Abort_take "Excception in Take because it is already aborted")   
+                                                      if ret1 then (Ok v)
+                                                      else Error ("Message : Error in take because it is already aborted")
+                                                      (* (Abort_take "Excception in Take because it is already aborted")    *)
                                                     end
                                                   else
                                                     take mv               
