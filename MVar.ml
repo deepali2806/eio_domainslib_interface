@@ -51,11 +51,7 @@ let rec put v mv =
                                                   else
                                                     put v mv
 
-        (* else
-        let resume = Queue.pop q in
-        let ret = resume (Ok v) in
-        if ret then ()
-        else raise (Abort_take "Excception in Put because it is already aborted") *)
+        
 
 (* TODO -> Check if v is to be returned only on true cases or false cases too!!! *)
 let rec take mv =
@@ -91,13 +87,25 @@ let rec take mv =
                                                   let ret = Atomic.compare_and_set mv old_contents new_contents in 
                                                   if ret then
                                                     begin
-                                                    let _ = resume (Ok ()) in ();
-                                                    v
+                                                    let ret1 = resume (Ok ()) in 
+                                                      if ret1 then v
+                                                      else raise (Abort_take "Excception in Take because it is already aborted")   
                                                     end
                                                   else
                                                     take mv               
 
-(* let take mv =
+(* 
+lett put v mv = 
+
+
+
+else
+        let resume = Queue.pop q in
+        let ret = resume (Ok v) in
+        if ret then ()
+        else raise (Abort_take "Excception in Put because it is already aborted")
+
+let take mv =
   match !mv with
   | Empty q -> perform (Sched.Suspend (fun r -> Queue.push r q))
   | Full (v, q) ->
