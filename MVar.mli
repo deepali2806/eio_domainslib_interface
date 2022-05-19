@@ -1,4 +1,5 @@
 type 'a t
+exception Abort_take of string
 val sw : bool ref
 val create : 'a -> 'a t
 val create_empty : unit -> 'a t

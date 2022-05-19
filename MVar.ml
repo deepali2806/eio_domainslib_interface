@@ -1,4 +1,5 @@
 open Effect
+
 exception Abort_take of string
 
 type 'a mv_state =
@@ -13,6 +14,7 @@ let create v = Atomic.make (Full (v, Fun_queue.empty))
 
 let sw = ref true 
 
+(*Retry is remaining for effect handler*)
 let rec put v mv =
   let old_contents = Atomic.get (mv) in
   match old_contents with
@@ -20,20 +22,15 @@ let rec put v mv =
                     perform (Sched.Suspend (fun r -> 
                                             let newQueue = Fun_queue.push q (v,r) in
                                             let new_contents = Full (v', newQueue) in
-                                            let var = Atomic.compare_and_set mv old_contents new_contents in
-                                            var
-                                            ));
-                    if !p then
-                      ()
-                    else
-                      put v mv
-                    (* TODO: Retry when var is false *)
+                                            p := Atomic.compare_and_set mv old_contents new_contents;
+                                            !p
+                                            ))
   | Empty q ->
       if Fun_queue.length q = 0 then 
                   begin
                     let new_contents = Full (v, Fun_queue.empty) in
                     let ret = Atomic.compare_and_set mv old_contents new_contents in 
-                    if (not ret) then 
+                    if (ret == false) then 
                       put v mv
                   end     
       else
@@ -53,22 +50,20 @@ let rec put v mv =
 
         
 
-(* TODO -> Check if v is to be returned only on true cases or false cases too!!! *)
 let rec take mv =
   let old_contents = Atomic.get mv in 
   match old_contents with
   | Empty q -> let p = ref true in 
-                let a = perform (Sched.Suspend (fun r -> 
+                 perform (Sched.Suspend (fun r -> 
+                                            Printf.printf "\nINside suspend%!";
                                             let newQueue = Fun_queue.push q r in
                                             let new_contents = Empty newQueue in
                                             p := Atomic.compare_and_set mv old_contents new_contents;
+                                            Printf.printf "\nAfter suspend%!";
                                             !p
                                           )
-                        ) in
-                        if !p then
-                          (Printf.printf "\nP is true";a)
-                        else
-                          (Printf.printf "\nP is false";take mv )                            
+                        ) 
+                             
   | Full (v, q) ->
                 if Fun_queue.length q = 0 then
                   begin
@@ -94,26 +89,3 @@ let rec take mv =
                                                   else
                                                     take mv               
 
-(* 
-lett put v mv = 
-
-
-
-else
-        let resume = Queue.pop q in
-        let ret = resume (Ok v) in
-        if ret then ()
-        else raise (Abort_take "Excception in Put because it is already aborted")
-
-let take mv =
-  match !mv with
-  | Empty q -> perform (Sched.Suspend (fun r -> Queue.push r q))
-  | Full (v, q) ->
-      if Queue.is_empty q then
-        (mv := Empty (Queue.create ()); v)
-      else begin
-        let (v', resume) = Queue.pop q in
-        mv := Full (v', q);
-        let _ = resume (Ok ()) in ();
-        v
-      end *)
