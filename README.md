@@ -1,2 +1,2 @@
 # eio_domainslib_interface
-Unified interface to call domainslib calls from eio without blocking
+Unified interface to communicate between domainslib and eio scheduler.
